@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import useAuthStore from './store/authStore';
 import app from '../firebase';
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { getAuth, getRedirectResult, GoogleAuthProvider, signInWithPopup, signInWithRedirect } from "firebase/auth";
 
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
@@ -9,11 +9,15 @@ const googleProvider = new GoogleAuthProvider();
 const App = () => {
   const { setToLS } = useAuthStore()
 
-  const handleGoogleLogin = async () => {
-    signInWithPopup(auth, googleProvider).then(async (result)=>{
-      console.log(result.user)
-      setToLS(await result.user.getIdToken())
+  useEffect(() => {
+    getRedirectResult(auth).then((result)=>{
+      console.log(result)
     })
+  }, [])
+  
+
+  const handleGoogleLogin = async () => {
+    signInWithRedirect(auth,googleProvider)
   };
 
   return (
